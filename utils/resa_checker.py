@@ -2,8 +2,6 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 class ResaChecker:
     def __init__(self, resa_email, resa_password, telegram_notify=None):
@@ -31,26 +29,26 @@ class ResaChecker:
         driver = webdriver.Chrome(options=options)
 
         try:
-            # Connexion à l'interface Temple Noble Art
             driver.get("https://api.resamania.com/oauth/login/templenobleart?client_id=26_2532ba2d23446346e4f83dda1570fdd224ce70c546251c4ce84bd734e0e18811&redirect_uri=https://member.resamania.com/templenobleart/&response_type=code")
 
-            # Attendre que le champ email soit visible
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "login_step_login_username")))
-
-            # Remplir email et mot de passe
+            # Remplir les champs du formulaire
             driver.find_element(By.ID, "login_step_login_username").send_keys(self.resa_email)
             driver.find_element(By.ID, "_password").send_keys(self.resa_password)
+            driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
-            # Cliquer sur le bouton de connexion
-            driver.find_element(By.XPATH, "//button[contains(text(), 'Connexion')]").click()
-
-            # Attendre la redirection
             time.sleep(5)
+
+            # Accès au planning
             driver.get("https://member.resamania.com/templenobleart/planning")
             time.sleep(5)
 
-            # Analyse des cours disponibles
-            cours = driver.find_elements(By.CLASS_NAME, "course-item")
+            cours = driver.find_elements(By.CLASS_NAME, "resaclass-card")
+
+            if not cours:
+                print("[⚠️] Aucun cours trouvé avec la classe 'resaclass-card'.")
+                print(driver.page_source)  # Pour t'aider à voir ce que Selenium voit
+                return
+
             for c in cours:
                 infos = c.text
                 if day in infos and hour in infos and course_name.lower() in infos.lower() and coach.lower() in infos.lower():
