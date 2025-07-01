@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import threading
+import os
 from utils.resa_checker import ResaChecker
 
 app = Flask(__name__)
