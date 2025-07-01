@@ -16,7 +16,7 @@ def send_telegram_message(message):
         try:
             requests.post(url, data=data)
         except Exception as e:
-            print(f"[Erreur envoi Telegram] {e}")
+            print(f"[❌] Erreur Telegram : {e}")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -34,8 +34,7 @@ def index():
         bot = ResaChecker(
             resa_email=os.environ.get("RESA_EMAIL"),
             resa_password=os.environ.get("RESA_PASSWORD"),
-            email_target=os.environ.get("EMAIL_TARGET"),
-            telegram_notify=send_telegram_message  # ⬅️ Ajout de la fonction de notif
+            telegram_notify=send_telegram_message
         )
 
         bot_thread = threading.Thread(target=bot.run, args=(day, hour, course_name, coach))
@@ -46,5 +45,4 @@ def index():
     return render_template("index.html")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # Render impose PORT
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)
