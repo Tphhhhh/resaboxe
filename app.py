@@ -45,4 +45,9 @@ def index():
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    test_bot = ResaChecker(
+        resa_email=os.environ.get("RESA_EMAIL"),
+        resa_password=os.environ.get("RESA_PASSWORD"),
+        telegram_notify=send_telegram_message
+    )
+    test_bot.run("Lundi", "18:00", "Boxe", "Jean")  # ⬅️ Valeurs fictives
